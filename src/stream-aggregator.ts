@@ -2,6 +2,7 @@ import findMyWay from 'find-my-way'
 import http from 'http'
 import { App, DISABLED, TemplatedApp } from 'uWebSockets.js'
 import logger from './logger'
+import { Config } from './types'
 
 export class StreamAggregator {
     private readonly _httpServer: http.Server
@@ -18,11 +19,8 @@ export class StreamAggregator {
         this._httpServer.timeout = 0
 
         router.on('GET', '/', (req, res) => {
-            const response = {
-                request: req,
-                message: 'hello world',
-            }
-            res.end(JSON.stringify(response, null, 2))
+            logger.info('Incoming request: ' + req.headers.host)
+            res.end('{message: "hello world"}')
         })
 
         this._wsServer = App().ws('/*', {
@@ -30,22 +28,18 @@ export class StreamAggregator {
             maxBackpressure: 1024,
             maxPayloadLength: 16 * 1024 * 1024,
             compression: DISABLED,
-
             open: (ws: any) => {
                 const path = ws.req.getUrl().toLocaleLowerCase()
                 ws.closed = false
-                logger.info('A WebSocket connected! Path: ' + path)
+                logger.info(`A WebSocket connected! Path: ${path}`)
             },
-
             message: (ws, message) => {
                 let ok = ws.send(message)
-                logger.info('ok? ' + ok)
+                logger.info(`${ok}: ${message}`)
             },
-
             drain: ws => {
                 logger.info('WebSocket backpressure: ' + ws.getBufferedAmount())
             },
-
             close: (ws: any) => {
                 ws.closed = true
                 if (ws.onclose !== undefined) {
@@ -56,20 +50,28 @@ export class StreamAggregator {
     }
 
     public async start(port: number) {
-        logger.info(this.config)
-
+        const wsPort = port + 1
         await new Promise<void>((resolve, reject) => {
-            this._httpServer.on('error', reject)
-            this._httpServer.listen(port || 8080, () => {
-                this._wsServer.listen(port + 1 || 8081, port => {
+            try {
+                this._httpServer.on('error', reject)
+                this._httpServer.listen(port, () => {
+                    logger.info(`Establishing connection with port ${port} ...`)
                     if (port) {
-                        logger.info('Listening to port: ' + port)
-                        resolve()
-                    } else {
-                        reject(new Error('WebSocket server did not start'))
+                        logger.info(`Listening to port ${port}`)
                     }
+                    this._wsServer.listen(wsPort, socket => {
+                        logger.info(`Establishing connection with ws port ${wsPort} ...`)
+                        if (socket) {
+                            logger.info(`Listening to port ${wsPort}`)
+                            resolve()
+                        } else {
+                            reject(new Error('WebSocket server did not start'))
+                        }
+                    })
                 })
-            })
+            } catch (error) {
+                reject(error)
+            }
         })
     }
 
@@ -80,8 +82,4 @@ export class StreamAggregator {
             })
         })
     }
-}
-
-interface Config {
-    apiKey?: string
 }

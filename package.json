@@ -5,14 +5,19 @@
         "node": ">=18"
     },
     "description": "Streamlined real-time trade feed aggregator delivering time and sales data from leading exchanges such as Binance, Bybit, BitMEX, and others through a WebSocket API.",
-    "main": "index.js",
+    "main": "dist/index.js",
+    "source": "src/index.js",
     "scripts": {
         "build": "tsc",
         "test": "jest --forceExit --runInBand",
         "lint": "lint-staged --config lint-staged.js",
         "format": "prettier --write .",
         "prettier": "prettier src -check",
-        "prepare": "husky install"
+        "prepare": "husky install",
+        "start": "yarn build && node bin/trade-stream-aggregator.js"
+    },
+    "bin": {
+        "trade-stream-aggregator": "./bin/trade-stream-aggregator.js"
     },
     "keywords": [],
     "author": "",
