@@ -18,4 +18,4 @@ jobs:
             - name: format
               run: yarn prettier
             - name: build
-              run: yarn build --if-present
+              run: yarn build
