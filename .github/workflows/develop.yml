@@ -14,7 +14,7 @@ jobs:
               with:
                   node-version: 18.x
             - name: yarn ci
-              run: yarn ci
+              run: yarn install --frozen-lockfile --check-files
             - name: format
               run: yarn prettier
             - name: build
