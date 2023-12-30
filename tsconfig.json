@@ -1,0 +1,23 @@
+{
+    "compilerOptions": {
+        "rootDir": "src",
+        "allowSyntheticDefaultImports": true,
+        "sourceMap": true,
+        "declaration": true,
+        "declarationMap": true,
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "target": "esnext",
+        "outDir": "dist",
+        "pretty": true,
+        "strict": true,
+        "noFallthroughCasesInSwitch": true,
+        "noImplicitReturns": true,
+        "noUnusedParameters": true,
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        "lib": ["ES2023", "dom"]
+    },
+    "include": ["src", "src/test"],
+    "exclude": ["node_modules/", "dist/", "build/"]
+}
