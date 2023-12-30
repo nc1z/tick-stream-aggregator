@@ -1,6 +1,7 @@
-import http from 'http'
 import findMyWay from 'find-my-way'
+import http from 'http'
 import { App, DISABLED, TemplatedApp } from 'uWebSockets.js'
+import logger from './logger'
 
 export class StreamAggregator {
     private readonly _httpServer: http.Server
@@ -33,16 +34,16 @@ export class StreamAggregator {
             open: (ws: any) => {
                 const path = ws.req.getUrl().toLocaleLowerCase()
                 ws.closed = false
-                console.log('A WebSocket connected! Path: ' + path)
+                logger.info('A WebSocket connected! Path: ' + path)
             },
 
             message: (ws, message) => {
                 let ok = ws.send(message)
-                console.log('ok? ' + ok)
+                logger.info('ok? ' + ok)
             },
 
             drain: ws => {
-                console.log('WebSocket backpressure: ' + ws.getBufferedAmount())
+                logger.info('WebSocket backpressure: ' + ws.getBufferedAmount())
             },
 
             close: (ws: any) => {
@@ -55,14 +56,14 @@ export class StreamAggregator {
     }
 
     public async start(port: number) {
-        console.log(this.config)
+        logger.info(this.config)
 
         await new Promise<void>((resolve, reject) => {
             this._httpServer.on('error', reject)
             this._httpServer.listen(port || 8080, () => {
                 this._wsServer.listen(port + 1 || 8081, port => {
                     if (port) {
-                        console.log('Listening to port: ' + port)
+                        logger.info('Listening to port: ' + port)
                         resolve()
                     } else {
                         reject(new Error('WebSocket server did not start'))

@@ -1,1 +1,1 @@
-console.log("test")
+export { StreamAggregator } from './stream-aggregator'
