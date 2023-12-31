@@ -8,7 +8,7 @@
     "main": "dist/index.js",
     "source": "src/index.js",
     "scripts": {
-        "build": "tsc",
+        "build": "rm -rf dist/ && tsc",
         "test": "jest --forceExit --runInBand",
         "lint": "lint-staged --config lint-staged.js",
         "format": "prettier --write .",
