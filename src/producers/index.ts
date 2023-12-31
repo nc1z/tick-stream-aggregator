@@ -1,0 +1,1 @@
+export { BinanceWebSocketClient } from './binance'

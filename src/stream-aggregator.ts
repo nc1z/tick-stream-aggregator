@@ -1,12 +1,15 @@
 import findMyWay from 'find-my-way'
 import http from 'http'
 import { App, DISABLED, TemplatedApp } from 'uWebSockets.js'
+import { MINIMUM_SIZE_FILTER } from './constants'
 import logger from './logger'
+import { BinanceWebSocketClient } from './producers'
 import { Config } from './types'
 
 export class StreamAggregator {
     private readonly _httpServer: http.Server
     private readonly _wsServer: TemplatedApp
+    private readonly _binanceClient: BinanceWebSocketClient
 
     constructor(private readonly config: Config) {
         const router = findMyWay({
@@ -47,6 +50,12 @@ export class StreamAggregator {
                 }
             },
         }) as any
+
+        // @TODO: Shift these to init args
+        this._binanceClient = new BinanceWebSocketClient({
+            streams: ['btcusdt@aggTrade'],
+            size: MINIMUM_SIZE_FILTER,
+        })
     }
 
     public async start(port: number) {
@@ -76,10 +85,14 @@ export class StreamAggregator {
     }
 
     public async stop() {
+        this._binanceClient.close()
+
         await new Promise<void>((resolve, reject) => {
             this._httpServer.close(err => {
                 err ? reject(err) : resolve()
             })
         })
+
+        logger.info('Server connection closed successfully.')
     }
 }
