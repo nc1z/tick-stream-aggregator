@@ -6,9 +6,6 @@ const PORT = 8080
 
 async function start() {
     const server = new StreamAggregator()
-    // @TODO
-    // Manage NodeJs clusters
-    // Manager docker
     await server.start(PORT)
 }
 
