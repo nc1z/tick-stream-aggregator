@@ -2,7 +2,11 @@
 
 Live trade feed aggregator server streaming BTC time and sales data from major exchanges like Binance, Bybit, BitMEX and more via a unified WebSocket API
 
+__Local tick stream example__
 > :construction: Work in progress!
+
+![image](https://github.com/nc1z/trade-stream-aggregator/assets/111836326/c6a3a1a8-29c5-46ef-9c1f-2ced64a46152)
+
 
 ## Websocket Market Stream
 
