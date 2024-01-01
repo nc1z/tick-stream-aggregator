@@ -6,7 +6,7 @@ Live trade feed aggregator server streaming BTC time and sales data from major e
 
 > :construction: Work in progress!
 
-![image](https://github.com/nc1z/tick-stream-aggregator/assets/111836326/f24948ab-a7ed-49c4-971a-b46a38887907)
+![image](https://github.com/nc1z/tick-stream-aggregator/assets/111836326/a9e79ac5-cdcc-4dca-b828-97183eadd5f7)
 
 ## Websocket Market Stream
 
