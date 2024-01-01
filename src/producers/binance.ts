@@ -1,15 +1,8 @@
 import WebSocket from 'ws'
-import { BINANCE_WS_BASE_ENDPOINT_FUTURES, RECONNECTION_ATTEMPT_LIMIT, RECONNECTION_INTERVAL } from '../constants'
 import { logTrade } from '../helpers'
-import logger from '../logger'
-import { StreamAggregator } from '../stream-aggregator'
 import { StreamRequestMethod } from '../types'
+import { BaseWebSocketClient } from './base'
 import { normalizeBinanceTrade } from './mapper'
-
-export interface BinanceStreamOptions {
-    streams: string[]
-    size?: number
-}
 
 interface BinanceStreamRequest {
     method: StreamRequestMethod
@@ -31,55 +24,8 @@ export interface BinanceAggTradeResponse {
     M?: boolean // Ignore
 }
 
-export class BinanceWebSocketClient {
-    private readonly _options: BinanceStreamOptions
-    private readonly _streamAggregator: StreamAggregator
-    private readonly _reconnectionInterval: number
-    private _reconnectionAttempts: number
-    private _ws?: WebSocket
-
-    constructor(options: BinanceStreamOptions, streamAggregator: StreamAggregator) {
-        this._options = options
-        this._streamAggregator = streamAggregator
-        this._reconnectionInterval = RECONNECTION_INTERVAL
-        this._reconnectionAttempts = 0
-        this.connect()
-    }
-
-    private connect() {
-        this._ws = new WebSocket(BINANCE_WS_BASE_ENDPOINT_FUTURES)
-
-        this._ws.on('error', (error: Error) => {
-            this.handleError(error)
-        })
-
-        this._ws.on('open', () => {
-            this.subscribeToStreams(this._options.streams)
-        })
-
-        this._ws.on('message', (data: WebSocket.Data) => {
-            this.handleMessage(data)
-        })
-
-        this._ws.on('close', () => {
-            this.handleClose()
-            this.scheduleReconnect()
-        })
-    }
-
-    private scheduleReconnect() {
-        if (this._reconnectionAttempts < RECONNECTION_ATTEMPT_LIMIT) {
-            logger.info('Binance: Scheduling reconnection...')
-            setTimeout(() => {
-                this._reconnectionAttempts++
-                this.connect()
-            }, this._reconnectionInterval)
-        } else {
-            logger.error('Binance: Exceeded maximum reconnection attempts.')
-        }
-    }
-
-    private handleMessage(data: WebSocket.Data): void {
+export class BinanceWebSocketClient extends BaseWebSocketClient {
+    protected handleMessage(data: WebSocket.Data): void {
         const response: BinanceAggTradeResponse =
             typeof data === 'string' ? JSON.parse(data) : JSON.parse(data.toString())
         const trade = normalizeBinanceTrade(response)
@@ -90,17 +36,7 @@ export class BinanceWebSocketClient {
         }
     }
 
-    private handleClose(): void {
-        this.unsubscribeFromStreams(this._options.streams)
-        logger.info('Binance: WebSocket closed')
-    }
-
-    private handleError(error: Error): void {
-        logger.error(error)
-        logger.error('Binance: WebSocket error: ' + error.message)
-    }
-
-    private subscribeToStreams(streams: string[]): void {
+    protected subscribeToStreams(streams: string[]): void {
         const subscriptionRequest: BinanceStreamRequest = {
             method: StreamRequestMethod.SUBSCRIBE,
             params: streams,
@@ -117,19 +53,5 @@ export class BinanceWebSocketClient {
             id: 1,
         }
         this._ws?.send(JSON.stringify(unsubscribeRequest))
-    }
-
-    public isConnected(): boolean {
-        return this._ws?.readyState === WebSocket.OPEN
-    }
-
-    public close() {
-        if (this.isConnected()) {
-            this.handleClose()
-            this._ws?.close()
-            logger.info('Binance: connection closed.')
-        } else {
-            logger.warn('Binance: Websocket is not open. Unable to close.')
-        }
     }
 }

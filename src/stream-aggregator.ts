@@ -1,11 +1,11 @@
 import findMyWay from 'find-my-way'
 import http from 'http'
 import { App, DISABLED, TemplatedApp } from 'uWebSockets.js'
-import { WS_TOPIC } from './constants'
+import { BINANCE_WS_BASE_ENDPOINT_FUTURES, WS_TOPIC } from './constants'
 import { arrayBufferToString } from './helpers'
 import logger from './logger'
 import { BinanceWebSocketClient } from './producers'
-import { Config, NormalizedTradeData } from './types'
+import { Config, Exchange, NormalizedTradeData } from './types'
 
 export class StreamAggregator {
     private readonly _httpServer: http.Server
@@ -57,6 +57,8 @@ export class StreamAggregator {
 
         this._binanceClient = new BinanceWebSocketClient(
             {
+                endpoint: BINANCE_WS_BASE_ENDPOINT_FUTURES,
+                exchange: Exchange.BINANCE,
                 streams: binanceStreams,
                 size,
             },
