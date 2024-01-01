@@ -17,5 +17,7 @@ jobs:
               run: yarn install --frozen-lockfile --check-files
             - name: format
               run: yarn prettier
+            - name: format
+              run: yarn test
             - name: build
               run: yarn build
