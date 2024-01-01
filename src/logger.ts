@@ -5,10 +5,11 @@ const loggerOptions: pino.LoggerOptions = {
     transport: {
         target: 'pino-pretty',
         options: {
-            colorize: true,
+            colorize: false,
         },
     },
     base: undefined, // Removes PID and hostname
+    timestamp: false,
 }
 
 const logger = pino(loggerOptions)

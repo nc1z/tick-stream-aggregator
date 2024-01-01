@@ -2,6 +2,7 @@ import WebSocket from 'ws'
 import { BINANCE_WS_BASE_ENDPOINT_FUTURES } from '../constants'
 import { logTrade } from '../helpers'
 import logger from '../logger'
+import { Exchange, StreamRequestMethod } from '../types'
 
 interface BinanceStreamOptions {
     streams: string[]
@@ -9,7 +10,7 @@ interface BinanceStreamOptions {
 }
 
 interface BinanceStreamRequest {
-    method: 'SUBSCRIBE' | 'UNSUBSCRIBE'
+    method: StreamRequestMethod
     params: string[]
     id: number
 }
@@ -58,11 +59,10 @@ export class BinanceWebSocketClient {
         const price = Number(trade.p)
         const quantity = Number(trade.q)
         const size = price * quantity
-        if (!this._options.size) {
-            logTrade('BINANCE', price, quantity)
-            return
+        const time = trade.T
+        if (!this._options.size || size >= this._options.size) {
+            logTrade(Exchange.BINANCE, price, quantity, time)
         }
-        size >= this._options.size && logTrade('BINANCE', price, quantity)
         // @TODO: Send this response back to our own websocket api
     }
 
@@ -78,7 +78,7 @@ export class BinanceWebSocketClient {
 
     private subscribeToStreams(streams: string[]): void {
         const subscriptionRequest: BinanceStreamRequest = {
-            method: 'SUBSCRIBE',
+            method: StreamRequestMethod.SUBSCRIBE,
             params: streams,
             id: 1,
         }
@@ -88,7 +88,7 @@ export class BinanceWebSocketClient {
 
     public unsubscribeFromStreams(streams: string[]) {
         const unsubscribeRequest: BinanceStreamRequest = {
-            method: 'UNSUBSCRIBE',
+            method: StreamRequestMethod.UNSUBSCRIBE,
             params: streams,
             id: 1,
         }
