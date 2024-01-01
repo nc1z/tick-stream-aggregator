@@ -2,7 +2,8 @@ import WebSocket from 'ws'
 import { BINANCE_WS_BASE_ENDPOINT_FUTURES } from '../constants'
 import { logTrade } from '../helpers'
 import logger from '../logger'
-import { Exchange, StreamRequestMethod } from '../types'
+import { StreamRequestMethod } from '../types'
+import { normalizeBinanceTrade } from './mapper'
 
 interface BinanceStreamOptions {
     streams: string[]
@@ -15,7 +16,7 @@ interface BinanceStreamRequest {
     id: number
 }
 
-interface BinanceAggTradeResponse {
+export interface BinanceAggTradeResponse {
     e: string // Event type
     E: number // Event time
     s: string // Symbol
@@ -26,7 +27,7 @@ interface BinanceAggTradeResponse {
     l: number // Last trade ID
     T: number // Trade time
     m: boolean // Is the buyer the market maker?
-    M: boolean // Ignore
+    M?: boolean // Ignore
 }
 
 export class BinanceWebSocketClient {
@@ -55,13 +56,12 @@ export class BinanceWebSocketClient {
     }
 
     private handleMessage(data: WebSocket.Data): void {
-        const trade: BinanceAggTradeResponse = typeof data === 'string' ? JSON.parse(data) : JSON.parse(data.toString())
-        const price = Number(trade.p)
-        const quantity = Number(trade.q)
-        const size = price * quantity
-        const time = trade.T
+        const response: BinanceAggTradeResponse =
+            typeof data === 'string' ? JSON.parse(data) : JSON.parse(data.toString())
+        const trade = normalizeBinanceTrade(response)
+        const { exchange, price, quantity, size, time } = trade
         if (!this._options.size || size >= this._options.size) {
-            logTrade(Exchange.BINANCE, price, quantity, time)
+            logTrade(exchange, price, quantity, time)
         }
         // @TODO: Send this response back to our own websocket api
     }

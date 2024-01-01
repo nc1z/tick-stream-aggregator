@@ -1,1 +1,1 @@
-export { BinanceWebSocketClient } from './binance'
+export * from './binance'
