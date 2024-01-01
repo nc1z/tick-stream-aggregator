@@ -6,7 +6,7 @@ import { StreamAggregator } from '../stream-aggregator'
 import { StreamRequestMethod } from '../types'
 import { normalizeBinanceTrade } from './mapper'
 
-interface BinanceStreamOptions {
+export interface BinanceStreamOptions {
     streams: string[]
     size?: number
 }

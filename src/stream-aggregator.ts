@@ -1,7 +1,7 @@
 import findMyWay from 'find-my-way'
 import http from 'http'
 import { App, DISABLED, TemplatedApp } from 'uWebSockets.js'
-import { BINANCE_STREAMS, MINIMUM_SIZE_FILTER, WS_TOPIC } from './constants'
+import { WS_TOPIC } from './constants'
 import { arrayBufferToString } from './helpers'
 import logger from './logger'
 import { BinanceWebSocketClient } from './producers'
@@ -10,16 +10,22 @@ import { Config, NormalizedTradeData } from './types'
 export class StreamAggregator {
     private readonly _httpServer: http.Server
     private readonly _wsServer: TemplatedApp
+    private readonly _config: Config
     private readonly _binanceClient: BinanceWebSocketClient
 
     constructor(private readonly config: Config) {
+        this._config = config
+        const { path, binanceStreams, sizeFilter } = this._config
+
         const router = findMyWay({
             ignoreDuplicateSlashes: true,
             ignoreTrailingSlash: true,
         })
+
         this._httpServer = http.createServer((req, res) => {
             router.lookup(req, res)
         })
+
         this._httpServer.timeout = 0
 
         router.on('GET', '/', (req, res) => {
@@ -27,7 +33,7 @@ export class StreamAggregator {
             res.end('{message: "hello world"}')
         })
 
-        this._wsServer = App().ws('/*', {
+        this._wsServer = App().ws(path, {
             idleTimeout: 60,
             maxBackpressure: 1024,
             maxPayloadLength: 16 * 1024 * 1024,
@@ -51,14 +57,15 @@ export class StreamAggregator {
 
         this._binanceClient = new BinanceWebSocketClient(
             {
-                streams: BINANCE_STREAMS,
-                size: MINIMUM_SIZE_FILTER,
+                streams: binanceStreams,
+                size: sizeFilter,
             },
             this,
         )
     }
 
-    public async start(port: number) {
+    public async start() {
+        const port = this._config.port
         const wsPort = port + 1
         await new Promise<void>((resolve, reject) => {
             try {

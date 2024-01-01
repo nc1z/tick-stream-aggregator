@@ -1,5 +1,8 @@
 export interface Config {
-    apiKey?: string
+    port: number
+    path: string
+    binanceStreams: string[]
+    sizeFilter: number
 }
 
 export enum Exchange {

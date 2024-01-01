@@ -1,12 +1,34 @@
 #!/usr/bin/env node
 
 const { StreamAggregator } = require('../dist')
+const yargs = require('yargs')
+const config = require('../config')
 
-const PORT = 8080
+const argv = yargs
+    .option('port', {
+        type: 'number',
+        describe: 'Server port',
+        default: config.server.port,
+    })
+    .option('path', {
+        type: 'string',
+        describe: 'WebSocket path',
+        default: config.websocket.path,
+    })
+    .option('binanceStreams', {
+        type: 'array',
+        describe: 'Binance streams',
+        default: config.binance.streams,
+    })
+    .option('sizeFilter', {
+        type: 'number',
+        describe: 'Filter by size (USD)',
+        default: config.binance.size,
+    }).argv
 
 async function start() {
-    const server = new StreamAggregator()
-    await server.start(PORT)
+    const server = new StreamAggregator(argv)
+    await server.start(argv.port)
 
     async function handleTermination(signal) {
         console.log(`Received ${signal}. Cleaning up...`)

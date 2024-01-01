@@ -47,6 +47,7 @@
         "find-my-way": "^8.0.0",
         "pino": "^8.17.2",
         "pino-pretty": "^10.3.1",
-        "uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.38.0"
+        "uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.38.0",
+        "yargs": "^17.7.2"
     }
 }
