@@ -24,28 +24,28 @@ describe('helpers', () => {
         test('should log trade (>=1,000,000) with formatted size (in M)', () => {
             logTrade(Exchange.BINANCE, 40000, 100, mockCurrentTime)
             expect(logger.info).toHaveBeenCalledWith(
-                `[${mockFormattedTime}] [BINANCE] 40000 [4.0M] [====================]`,
+                `[${mockFormattedTime}] [BINANCE] 40000 [4.0M]   [====================]`,
             )
         })
 
         test('should log trade (>=1,000) with formatted size (in K)', () => {
             logTrade(Exchange.BINANCE, 40000, 0.5, mockCurrentTime)
             expect(logger.info).toHaveBeenCalledWith(
-                `[${mockFormattedTime}] [BINANCE] 40000 [20.0K] [=                   ]`,
+                `[${mockFormattedTime}] [BINANCE] 40000 [20.0K]  [=                   ]`,
             )
         })
 
         test('should log trade (>=100) with formatted size (in K)', () => {
             logTrade(Exchange.BINANCE, 40000, 0.01, mockCurrentTime)
             expect(logger.info).toHaveBeenCalledWith(
-                `[${mockFormattedTime}] [BINANCE] 40000 [0.4K] [=                   ]`,
+                `[${mockFormattedTime}] [BINANCE] 40000 [0.4K]   [=                   ]`,
             )
         })
 
         test('should log trade (<100) with formatted size (default)', () => {
             logTrade(Exchange.BINANCE, 40000, 0.001, mockCurrentTime)
             expect(logger.info).toHaveBeenCalledWith(
-                `[${mockFormattedTime}] [BINANCE] 40000 [0.04K] [=                   ]`,
+                `[${mockFormattedTime}] [BINANCE] 40000 [0.04K]  [=                   ]`,
             )
         })
     })

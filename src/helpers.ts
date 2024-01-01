@@ -21,7 +21,9 @@ export function logTrade(exchange: Exchange, price: number, quantity: number, ti
     }
     const options: Intl.DateTimeFormatOptions = { hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: false }
     const currentTime = new Date(time).toLocaleTimeString(undefined, options)
-    const log = `[${currentTime}] [${exchange}] ${price.toFixed(0)} [${formattedSize}] ${getSizeIndicator(size)}`
+    const formattedSizeWithPadding = padSpacing(`[${formattedSize}]`, 8)
+    const sizeIndicator = getSizeIndicator(size)
+    const log = `[${currentTime}] [${exchange}] ${price.toFixed(0)} ${formattedSizeWithPadding} ${sizeIndicator}`
     logger.info(log)
 }
 
@@ -30,6 +32,12 @@ function getSizeIndicator(size: number) {
     const scaledSize = size / 1e6
     const barLength = Math.min(Math.ceil(scaledSize * maxBarLength), maxBarLength)
     return '[' + '='.repeat(barLength) + ' '.repeat(maxBarLength - barLength) + ']'
+}
+
+function padSpacing(text: string, totalLength: number) {
+    const paddingLength = Math.max(totalLength - text.length, 0)
+    const padding = ' '.repeat(paddingLength)
+    return `${text}${padding}`
 }
 
 export function arrayBufferToString(data: ArrayBuffer) {

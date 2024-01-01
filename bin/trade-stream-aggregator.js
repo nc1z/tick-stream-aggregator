@@ -20,7 +20,7 @@ const argv = yargs
         describe: 'Binance streams',
         default: config.binance.streams,
     })
-    .option('sizeFilter', {
+    .option('size', {
         type: 'number',
         describe: 'Filter by size (USD)',
         default: config.binance.size,
