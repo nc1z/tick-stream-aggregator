@@ -1,8 +1,8 @@
 # Trade Stream Aggregator
 
-Streamlined real-time trade feed aggregator delivering time and sales data from leading exchanges such as Binance, Bybit, BitMEX, and others through a HTTP & WebSocket API.
+Live trade feed aggregator server streaming BTC time and sales data from major exchanges like Binance, Bybit, BitMEX and more via a unified WebSocket API
 
-> Work in progress. This is a learning project.
+> Work in progress!
 
 ## Acknowledgement and references
 
@@ -12,7 +12,7 @@ Inspiration for the idea
 
 -   [AGGR](https://github.com/Tucsky/aggr-server) - server side cryptocurrency trades aggregator
 
-NodeJs architectural pattern, design choices and optimisation
+NodeJs design choices and optimisation
 
 -   [Tardis.dev](https://github.com/tardis-dev) - The most granular data for cryptocurrency markets
 
