@@ -2,6 +2,7 @@ import WebSocket from 'ws'
 import { BINANCE_WS_BASE_ENDPOINT_FUTURES } from '../constants'
 import { logTrade } from '../helpers'
 import logger from '../logger'
+import { StreamAggregator } from '../stream-aggregator'
 import { StreamRequestMethod } from '../types'
 import { normalizeBinanceTrade } from './mapper'
 
@@ -32,10 +33,12 @@ export interface BinanceAggTradeResponse {
 
 export class BinanceWebSocketClient {
     private readonly _options: BinanceStreamOptions
+    private readonly _streamAggregator: StreamAggregator
     private _ws: WebSocket
 
-    constructor(options: BinanceStreamOptions) {
+    constructor(options: BinanceStreamOptions, streamAggregator: StreamAggregator) {
         this._options = options
+        this._streamAggregator = streamAggregator
         this._ws = new WebSocket(BINANCE_WS_BASE_ENDPOINT_FUTURES)
 
         this._ws.on('error', (error: Error) => {
@@ -62,8 +65,8 @@ export class BinanceWebSocketClient {
         const { exchange, price, quantity, size, time } = trade
         if (!this._options.size || size >= this._options.size) {
             logTrade(exchange, price, quantity, time)
+            this._streamAggregator.sendNormalizedTradeData(trade)
         }
-        // @TODO: Send this response back to our own websocket api
     }
 
     private handleClose(): void {

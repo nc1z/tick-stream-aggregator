@@ -4,11 +4,15 @@ import { Exchange } from './types'
 export function logTrade(exchange: Exchange, price: number, quantity: number, time: number) {
     const size = price * quantity
     let formattedSize: string
+
+    const isWhale = size >= 1e6
+    const isFish = size >= 1e2
+
     switch (true) {
-        case size >= 1e6:
+        case isWhale:
             formattedSize = (size / 1e6).toFixed(1) + 'M'
             break
-        case size >= 1e2:
+        case isFish:
             formattedSize = (size / 1e3).toFixed(1) + 'K'
             break
         default:
@@ -17,6 +21,18 @@ export function logTrade(exchange: Exchange, price: number, quantity: number, ti
     }
     const options: Intl.DateTimeFormatOptions = { hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: false }
     const currentTime = new Date(time).toLocaleTimeString(undefined, options)
-    const log = `[${currentTime}] [${exchange}] ${price.toFixed(0)} [${formattedSize}]`
+    const log = `[${currentTime}] [${exchange}] ${price.toFixed(0)} [${formattedSize}] ${getSizeIndicator(size)}`
     logger.info(log)
+}
+
+function getSizeIndicator(size: number) {
+    const maxBarLength = 20
+    const scaledSize = size / 1e6
+    const barLength = Math.min(Math.ceil(scaledSize * maxBarLength), maxBarLength)
+    return '[' + '='.repeat(barLength) + ' '.repeat(maxBarLength - barLength) + ']'
+}
+
+export function arrayBufferToString(data: ArrayBuffer) {
+    const decoder = new TextDecoder()
+    return decoder.decode(data)
 }

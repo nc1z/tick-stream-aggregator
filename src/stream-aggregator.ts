@@ -1,10 +1,11 @@
 import findMyWay from 'find-my-way'
 import http from 'http'
 import { App, DISABLED, TemplatedApp } from 'uWebSockets.js'
-import { MINIMUM_SIZE_FILTER } from './constants'
+import { BINANCE_STREAMS, MINIMUM_SIZE_FILTER, WS_TOPIC } from './constants'
+import { arrayBufferToString } from './helpers'
 import logger from './logger'
 import { BinanceWebSocketClient } from './producers'
-import { Config } from './types'
+import { Config, NormalizedTradeData } from './types'
 
 export class StreamAggregator {
     private readonly _httpServer: http.Server
@@ -31,10 +32,10 @@ export class StreamAggregator {
             maxBackpressure: 1024,
             maxPayloadLength: 16 * 1024 * 1024,
             compression: DISABLED,
-            open: (ws: any) => {
-                const path = ws.req.getUrl().toLocaleLowerCase()
-                ws.closed = false
-                logger.info(`A WebSocket connected! Path: ${path}`)
+            open: ws => {
+                const IPv6 = arrayBufferToString(ws.getRemoteAddressAsText())
+                ws.subscribe(WS_TOPIC)
+                logger.info(`A WebSocket connected! Path: ${IPv6}`)
             },
             message: (ws, message) => {
                 let ok = ws.send(message)
@@ -43,19 +44,18 @@ export class StreamAggregator {
             drain: ws => {
                 logger.info('WebSocket backpressure: ' + ws.getBufferedAmount())
             },
-            close: (ws: any) => {
-                ws.closed = true
-                if (ws.onclose !== undefined) {
-                    ws.onclose()
-                }
+            close: (_, code) => {
+                logger.info(`[${code}] A WebSocket disconnected!`)
             },
         }) as any
 
-        // @TODO: Shift these to init args
-        this._binanceClient = new BinanceWebSocketClient({
-            streams: ['btcusdt@aggTrade'],
-            size: MINIMUM_SIZE_FILTER,
-        })
+        this._binanceClient = new BinanceWebSocketClient(
+            {
+                streams: BINANCE_STREAMS,
+                size: MINIMUM_SIZE_FILTER,
+            },
+            this,
+        )
     }
 
     public async start(port: number) {
@@ -94,5 +94,10 @@ export class StreamAggregator {
         })
 
         logger.info('Server connection closed successfully.')
+    }
+
+    public sendNormalizedTradeData(data: NormalizedTradeData) {
+        const message = JSON.stringify(data)
+        this._wsServer.publish(WS_TOPIC, message)
     }
 }
