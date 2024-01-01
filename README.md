@@ -60,10 +60,15 @@ Start the server
 yarn start
 ```
 
-Start the server with custom flags
+## Custom configuration
+
+For customisation, please pass the arguments as such
 
 ```bash
-yarn start --port 3000 --sizeFilter 10000
+yarn start [command] [options]
+
+# Example
+yarn start --port 3000 --size 10000
 ```
 
 ## Acknowledgement and references

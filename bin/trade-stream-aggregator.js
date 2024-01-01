@@ -9,6 +9,7 @@ const argv = yargs
         type: 'number',
         describe: 'Server port',
         default: config.server.port,
+        alias: '-p',
     })
     .option('path', {
         type: 'string',
@@ -24,6 +25,7 @@ const argv = yargs
         type: 'number',
         describe: 'Filter by size (USD)',
         default: config.binance.size,
+        alias: '-s',
     }).argv
 
 async function start() {
