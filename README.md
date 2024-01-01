@@ -1,8 +1,8 @@
-# Trade Stream Aggregator
+# Bitcoin Tick Stream Aggregator
 
 Live trade feed aggregator server streaming BTC time and sales data from major exchanges like Binance, Bybit, BitMEX and more via a unified WebSocket API
 
-**Local tick stream example**
+**Tick stream example**
 
 > :construction: Work in progress!
 
@@ -39,13 +39,13 @@ To run the server locally
 Clone the repository
 
 ```bash
-git clone https://github.com/nc1z/trade-stream-aggregator.git
+git clone https://github.com/nc1z/tick-stream-aggregator.git
 ```
 
 Navigate into directory
 
 ```bash
-cd trade-stream-aggregator/
+cd tick-stream-aggregator/
 ```
 
 Install dependencies

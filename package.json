@@ -1,5 +1,5 @@
 {
-    "name": "trade-stream-aggregator",
+    "name": "tick-stream-aggregator",
     "version": "1.0.0",
     "engines": {
         "node": ">=18"
@@ -14,12 +14,12 @@
         "format": "prettier --write .",
         "prettier": "prettier src -check",
         "prepare": "husky install",
-        "start": "yarn build && node bin/trade-stream-aggregator.js",
-        "start:pm2": "yarn build && pm2 start bin/trade-stream-aggregator.js -i max",
+        "start": "yarn build && node bin/tick-stream-aggregator.js",
+        "start:pm2": "yarn build && pm2 start bin/tick-stream-aggregator.js -i max",
         "pm2": "pm2"
     },
     "bin": {
-        "trade-stream-aggregator": "./bin/trade-stream-aggregator.js"
+        "tick-stream-aggregator": "./bin/tick-stream-aggregator.js"
     },
     "keywords": [],
     "author": "",
