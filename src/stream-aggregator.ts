@@ -13,9 +13,9 @@ export class StreamAggregator {
     private readonly _config: Config
     private readonly _binanceClient: BinanceWebSocketClient
 
-    constructor(private readonly config: Config) {
+    constructor(config: Config) {
         this._config = config
-        const { path, binanceStreams, sizeFilter } = this._config
+        const { path, binanceStreams, size } = this._config
 
         const router = findMyWay({
             ignoreDuplicateSlashes: true,
@@ -30,7 +30,7 @@ export class StreamAggregator {
 
         router.on('GET', '/', (req, res) => {
             logger.info('Incoming request: ' + req.headers.host)
-            res.end('{message: "hello world"}')
+            res.end('{status: "live"}')
         })
 
         this._wsServer = App().ws(path, {
@@ -58,7 +58,7 @@ export class StreamAggregator {
         this._binanceClient = new BinanceWebSocketClient(
             {
                 streams: binanceStreams,
-                size: sizeFilter,
+                size,
             },
             this,
         )

@@ -1,8 +1,10 @@
 export interface Config {
     port: number
     path: string
+    reconnectionInterval: number
+    reconnectionAttempts: number
     binanceStreams: string[]
-    sizeFilter: number
+    size: number
 }
 
 export enum Exchange {
