@@ -1,10 +1,11 @@
 import findMyWay from 'find-my-way'
 import http from 'http'
 import { App, DISABLED, TemplatedApp } from 'uWebSockets.js'
-import { BINANCE_WS_BASE_ENDPOINT_FUTURES, WS_TOPIC } from './constants'
+import { BINANCE_WS_BASE_ENDPOINT_FUTURES, BYBIT_WS_BASE_ENDPOINT_FUTURES, WS_TOPIC } from './constants'
 import { arrayBufferToString } from './helpers'
 import logger from './logger'
 import { BinanceWebSocketClient } from './producers'
+import { BybitWebSocketClient } from './producers/bybit'
 import { Config, Exchange, NormalizedTradeData } from './types'
 
 export class StreamAggregator {
@@ -12,10 +13,11 @@ export class StreamAggregator {
     private readonly _wsServer: TemplatedApp
     private readonly _config: Config
     private readonly _binanceClient: BinanceWebSocketClient
+    private readonly _bybitClient: BybitWebSocketClient
 
     constructor(config: Config) {
         this._config = config
-        const { path, binanceStreams, size } = this._config
+        const { path, binanceStreams, bybitStreams, size } = this._config
 
         const router = findMyWay({
             ignoreDuplicateSlashes: true,
@@ -64,6 +66,16 @@ export class StreamAggregator {
             },
             this,
         )
+
+        this._bybitClient = new BybitWebSocketClient(
+            {
+                endpoint: BYBIT_WS_BASE_ENDPOINT_FUTURES,
+                exchange: Exchange.BYBIT,
+                streams: bybitStreams,
+                size,
+            },
+            this,
+        )
     }
 
     public async start() {
@@ -95,6 +107,7 @@ export class StreamAggregator {
 
     public async stop() {
         this._binanceClient.close()
+        this._bybitClient.close()
 
         await new Promise<void>((resolve, reject) => {
             this._httpServer.close(err => {

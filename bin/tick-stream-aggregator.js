@@ -19,12 +19,17 @@ const argv = yargs
     .option('binanceStreams', {
         type: 'array',
         describe: 'Binance streams',
-        default: config.binance.streams,
+        default: config.filters.binance.streams,
+    })
+    .option('bybitStreams', {
+        type: 'array',
+        describe: 'Bybit streams',
+        default: config.filters.bybit.streams,
     })
     .option('size', {
         type: 'number',
         describe: 'Filter by size (USD)',
-        default: config.binance.size,
+        default: config.filters.size,
         alias: '-s',
     }).argv
 

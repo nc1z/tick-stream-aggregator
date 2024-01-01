@@ -24,13 +24,15 @@ export interface BinanceAggTradeResponse {
     M?: boolean // Ignore
 }
 
+// @TODO: Add successful connection log
+
 export class BinanceWebSocketClient extends BaseWebSocketClient {
     protected handleMessage(data: WebSocket.Data): void {
         const response: BinanceAggTradeResponse =
             typeof data === 'string' ? JSON.parse(data) : JSON.parse(data.toString())
         const trade = normalizeBinanceTrade(response)
         const { exchange, price, quantity, size, time } = trade
-        if (!this._options.size || size >= this._options.size) {
+        if (!this._options.size || Math.abs(size) >= this._options.size) {
             logTrade(exchange, price, quantity, time)
             this._streamAggregator.sendNormalizedTradeData(trade)
         }

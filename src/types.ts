@@ -4,16 +4,23 @@ export interface Config {
     reconnectionInterval: number
     reconnectionAttempts: number
     binanceStreams: string[]
+    bybitStreams: string[]
     size: number
 }
 
 export enum Exchange {
     BINANCE = 'BINANCE',
+    BYBIT = 'BYBIT',
 }
 
 export enum StreamRequestMethod {
     SUBSCRIBE = 'SUBSCRIBE',
     UNSUBSCRIBE = 'UNSUBSCRIBE',
+}
+
+export enum StreamRequestMethodLowerCase {
+    SUBSCRIBE = 'subscribe',
+    UNSUBSCRIBE = 'unsubscribe',
 }
 
 export interface NormalizedTradeData {

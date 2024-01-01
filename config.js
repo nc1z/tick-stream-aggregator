@@ -5,8 +5,13 @@ module.exports = {
     websocket: {
         path: '/*',
     },
-    binance: {
-        streams: ['btcusdt@aggTrade'],
+    filters: {
         size: 100000,
+        binance: {
+            streams: ['btcusdt@aggTrade'],
+        },
+        bybit: {
+            streams: ['publicTrade.BTCUSDT'],
+        },
     },
 }
