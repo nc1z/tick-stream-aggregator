@@ -4,7 +4,29 @@ Live trade feed aggregator server streaming BTC time and sales data from major e
 
 > :construction: Work in progress!
 
+## Websocket Market Stream
+
+Base Url: `ws://localhost:8081/`
+
+Example response
+
+```json
+{
+    "exchange": "BINANCE",
+    "price": 42364.6,
+    "quantity": 3.626,
+    "size": 153614.0396,
+    "time": 1704089838366
+}
+```
+
 ## Getting started
+
+Users can choose to run this locally or via spinning up a docker instance.
+
+### Docker
+
+> :construction: Work in progress!
 
 ### Local development
 
@@ -32,22 +54,6 @@ Start the server
 
 ```bash
 yarn start
-```
-
-## Websocket Market Stream
-
-Base Url: `ws://localhost:8081/`
-
-Example response
-
-```json
-{
-    "exchange": "BINANCE",
-    "price": 42364.6,
-    "quantity": 3.626,
-    "size": 153614.0396,
-    "time": 1704089838366
-}
 ```
 
 ## Acknowledgement and references
