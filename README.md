@@ -2,7 +2,53 @@
 
 Live trade feed aggregator server streaming BTC time and sales data from major exchanges like Binance, Bybit, BitMEX and more via a unified WebSocket API
 
-> Work in progress!
+> :construction: Work in progress!
+
+## Getting started
+
+### Local development
+
+To run the server locally
+
+Clone the repository
+
+```bash
+git clone https://github.com/nc1z/trade-stream-aggregator.git
+```
+
+Navigate into directory
+
+```bash
+cd trade-stream-aggregator/
+```
+
+Install dependencies
+
+```bash
+yarn install
+```
+
+Start the server
+
+```bash
+yarn start
+```
+
+## Websocket Market Stream
+
+Base Url: `ws://localhost:8081/`
+
+Example response
+
+```json
+{
+    "exchange": "BINANCE",
+    "price": 42364.6,
+    "quantity": 3.626,
+    "size": 153614.0396,
+    "time": 1704089838366
+}
+```
 
 ## Acknowledgement and references
 
