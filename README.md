@@ -23,6 +23,7 @@ Example response
 
 ```json
 {
+    "side": "BUY",
     "exchange": "BINANCE",
     "price": 42364.6,
     "quantity": 3.626,
