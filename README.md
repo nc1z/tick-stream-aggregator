@@ -2,7 +2,9 @@
 
 Live trade feed aggregator server streaming BTC time and sales data from major exchanges like Binance, Bybit, BitMEX and more via a unified WebSocket API
 
-> :construction: Work in progress!
+> :construction: Tick stream example:
+
+![image](https://github.com/nc1z/tick-stream-aggregator/assets/111836326/a9e79ac5-cdcc-4dca-b828-97183eadd5f7)
 
 **Supported pairs**
 
@@ -11,10 +13,6 @@ Live trade feed aggregator server streaming BTC time and sales data from major e
 | BINANCE  | BTCUSDT | :white_check_mark: |
 | BYBIT    | BTCUSDT | :white_check_mark: |
 | BYBIT    | BTCUSD  | -                  |
-
-**Tick stream example**
-
-![image](https://github.com/nc1z/tick-stream-aggregator/assets/111836326/a9e79ac5-cdcc-4dca-b828-97183eadd5f7)
 
 ## Websocket Market Stream
 
