@@ -6,17 +6,15 @@ import { arrayBufferToString } from './helpers'
 import logger from './logger'
 import { BinanceWebSocketClient } from './producers'
 import { BybitWebSocketClient } from './producers/bybit'
-import { Config, Exchange, NormalizedTradeData } from './types'
+import { Config, Exchange } from './types'
 
 export class StreamAggregator {
     private readonly _httpServer: http.Server
     private readonly _wsServer: TemplatedApp
-    private readonly _config: Config
     private readonly _binanceClient: BinanceWebSocketClient
     private readonly _bybitClient: BybitWebSocketClient
 
-    constructor(config: Config) {
-        this._config = config
+    constructor(private readonly _config: Config) {
         const { path, binanceStreams, bybitStreams, size } = this._config
 
         const router = findMyWay({
@@ -64,7 +62,7 @@ export class StreamAggregator {
                 streams: binanceStreams,
                 size,
             },
-            this,
+            this._wsServer,
         )
 
         this._bybitClient = new BybitWebSocketClient(
@@ -74,7 +72,7 @@ export class StreamAggregator {
                 streams: bybitStreams,
                 size,
             },
-            this,
+            this._wsServer,
         )
     }
 
@@ -116,10 +114,5 @@ export class StreamAggregator {
         })
 
         logger.info('Server connection closed successfully.')
-    }
-
-    public sendNormalizedTradeData(data: NormalizedTradeData) {
-        const message = JSON.stringify(data)
-        this._wsServer.publish(WS_TOPIC, message)
     }
 }

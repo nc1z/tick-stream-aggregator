@@ -1,10 +1,10 @@
+import { TemplatedApp } from 'uWebSockets.js'
 import WebSocket from 'ws'
-import { RECONNECTION_ATTEMPT_LIMIT, RECONNECTION_INTERVAL } from '../constants'
+import { RECONNECTION_ATTEMPT_LIMIT, RECONNECTION_INTERVAL, WS_TOPIC } from '../constants'
 import logger from '../logger'
-import { StreamAggregator } from '../stream-aggregator'
-import { Exchange } from '../types'
+import { Exchange, NormalizedTradeData } from '../types'
 
-interface StreamOptions {
+export interface StreamOptions {
     endpoint: string
     exchange: Exchange
     streams: string[]
@@ -14,13 +14,13 @@ interface StreamOptions {
 export abstract class BaseWebSocketClient<TStreamOptions extends StreamOptions = StreamOptions> {
     private readonly _reconnectionInterval: number
     protected readonly _options: TStreamOptions
-    protected readonly _streamAggregator: StreamAggregator
+    protected readonly _wsServer: TemplatedApp
     protected _ws?: WebSocket
     private _reconnectionAttempts: number
 
-    constructor(options: TStreamOptions, streamAggregator: StreamAggregator) {
+    constructor(options: TStreamOptions, wsServer: TemplatedApp) {
         this._options = options
-        this._streamAggregator = streamAggregator
+        this._wsServer = wsServer
         this._reconnectionInterval = RECONNECTION_INTERVAL
         this._reconnectionAttempts = 0
         this.connect()
@@ -72,6 +72,11 @@ export abstract class BaseWebSocketClient<TStreamOptions extends StreamOptions =
     protected abstract handleMessage(data: WebSocket.Data): void
     protected abstract subscribeToStreams(streams: string[]): void
     protected abstract unsubscribeFromStreams(streams: string[]): void
+
+    public sendNormalizedTradeData(data: NormalizedTradeData) {
+        const message = JSON.stringify(data)
+        this._wsServer.publish(WS_TOPIC, message)
+    }
 
     public isConnected(): boolean {
         return this._ws?.readyState === WebSocket.OPEN

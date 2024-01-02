@@ -1,5 +1,6 @@
 import WebSocket from 'ws'
 import { logTrade } from '../helpers'
+import logger from '../logger'
 import { StreamRequestMethod } from '../types'
 import { BaseWebSocketClient } from './base'
 import { normalizeBinanceTrade } from './mapper'
@@ -10,7 +11,12 @@ interface BinanceStreamRequest {
     id: number
 }
 
-export interface BinanceAggTradeResponse {
+interface SubResponse {
+    result?: null
+    id?: number
+}
+
+export interface BinanceAggTradeResponse extends SubResponse {
     e: string // Event type
     E: number // Event time
     s: string // Symbol
@@ -24,21 +30,26 @@ export interface BinanceAggTradeResponse {
     M?: boolean // Ignore
 }
 
-// @TODO: Add successful connection log
-
 export class BinanceWebSocketClient extends BaseWebSocketClient {
     protected handleMessage(data: WebSocket.Data): void {
         const response: BinanceAggTradeResponse =
             typeof data === 'string' ? JSON.parse(data) : JSON.parse(data.toString())
+
+        if (response?.result === null) {
+            logger.info('Successful connection to Binance WebSocket')
+            return
+        }
+
         const trade = normalizeBinanceTrade(response)
         const { exchange, price, quantity, size, time } = trade
+
         if (!this._options.size || Math.abs(size) >= this._options.size) {
             logTrade(exchange, price, quantity, time)
-            this._streamAggregator.sendNormalizedTradeData(trade)
+            this.sendNormalizedTradeData(trade)
         }
     }
 
-    protected subscribeToStreams(streams: string[]): void {
+    protected async subscribeToStreams(streams: string[]): Promise<void> {
         const subscriptionRequest: BinanceStreamRequest = {
             method: StreamRequestMethod.SUBSCRIBE,
             params: streams,

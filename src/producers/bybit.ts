@@ -24,14 +24,14 @@ export interface BybitTradeResponse {
 }
 
 interface BybitTradeData {
-    T: number
-    s: string
-    S: string
-    v: string
-    p: string
-    L: string
-    i: string
-    BT: boolean
+    T: number // The timestamp (ms) that the order is filled
+    s: string // Symbol name
+    S: string // Side of taker Buy/Sell
+    v: string // Trade size
+    p: string // Trade price
+    L: string // Direction of price change
+    i: string // Trade ID
+    BT: boolean // Whether it is a block trade order or not
 }
 
 // @TODO: Bybit docs: To avoid network or program issues, we recommend that you send
@@ -40,16 +40,18 @@ interface BybitTradeData {
 export class BybitWebSocketClient extends BaseWebSocketClient {
     protected handleMessage(data: WebSocket.Data): void {
         const response: BybitTradeResponse = typeof data === 'string' ? JSON.parse(data) : JSON.parse(data.toString())
+
         if (response?.success) {
             logger.info('Successful connection to Bybit WebSocket')
             return
         }
+
         const trade = normalizeBybitTrade(response)
         const { exchange, price, quantity, size, time } = trade
+
         if (!this._options.size || Math.abs(size) >= this._options.size) {
-            console.log(trade)
             logTrade(exchange, price, quantity, time)
-            this._streamAggregator.sendNormalizedTradeData(trade)
+            this.sendNormalizedTradeData(trade)
         }
     }
 
