@@ -1,26 +1,29 @@
 import WebSocket from 'ws'
 import { logTrade } from '../helpers'
 import logger from '../logger'
-import { StreamRequestMethodLowerCase } from '../types'
+import { StreamRequestMethod } from '../types'
 import { BaseWebSocketClient } from './base'
 import { normalizeBybitTrade } from './mapper'
 
 interface BybitStreamRequest {
-    op: StreamRequestMethodLowerCase
+    op: StreamRequestMethod
     args: string[]
     req_id?: string
 }
 
-export interface BybitTradeResponse {
-    topic: string
-    type: string
-    ts: number
-    data: BybitTradeData[]
+interface SubResponse {
     success?: true
     ret_msg?: string
     conn_id?: string
     req_id?: string
     op?: string
+}
+
+export interface BybitTradeResponse extends SubResponse {
+    topic: string
+    type: string
+    ts: number
+    data: BybitTradeData[]
 }
 
 interface BybitTradeData {
@@ -47,17 +50,17 @@ export class BybitWebSocketClient extends BaseWebSocketClient {
         }
 
         const trade = normalizeBybitTrade(response)
-        const { exchange, price, quantity, size, time } = trade
+        const { exchange, price, size, side, time } = trade
 
         if (!this._options.size || Math.abs(size) >= this._options.size) {
-            logTrade(exchange, price, quantity, time)
+            logTrade(exchange, price, size, side, time)
             this.sendNormalizedTradeData(trade)
         }
     }
 
     protected subscribeToStreams(streams: string[]): void {
         const subscriptionRequest: BybitStreamRequest = {
-            op: StreamRequestMethodLowerCase.SUBSCRIBE,
+            op: StreamRequestMethod.subscribe,
             args: streams,
         }
 
@@ -66,7 +69,7 @@ export class BybitWebSocketClient extends BaseWebSocketClient {
 
     public unsubscribeFromStreams(streams: string[]) {
         const unsubscribeRequest: BybitStreamRequest = {
-            op: StreamRequestMethodLowerCase.UNSUBSCRIBE,
+            op: StreamRequestMethod.unsubscribe,
             args: streams,
         }
         this._ws?.send(JSON.stringify(unsubscribeRequest))

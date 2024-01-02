@@ -1,6 +1,7 @@
 import { BinanceAggTradeResponse } from '../src/producers'
+import { BitmexTradeResponse } from '../src/producers/bitmex'
 import { BybitTradeResponse } from '../src/producers/bybit'
-import { Exchange, NormalizedTradeData } from '../src/types'
+import { Exchange, NormalizedTradeData, Side } from '../src/types'
 
 export const mockBinanceAggTradeResponse: BinanceAggTradeResponse = {
     e: 'aggTrade',
@@ -33,7 +34,29 @@ export const mockBybitTradeResponse: BybitTradeResponse = {
         },
     ],
 }
+
+export const mockBitmexTradeResponse: BitmexTradeResponse = {
+    table: 'trade',
+    action: 'insert',
+    data: [
+        {
+            timestamp: '2024-01-02T15:17:11.553Z',
+            symbol: 'XBTUSD',
+            side: 'Sell',
+            size: 3100,
+            price: 45091.5,
+            tickDirection: 'ZeroMinusTick',
+            trdMatchID: '00000000-006d-1000-0000-0003b66bfd1f',
+            grossValue: 6874901,
+            homeNotional: 0.06874901,
+            foreignNotional: 3100,
+            trdType: 'Regular',
+        },
+    ],
+}
+
 export const mockBinanceNormalizedTrade: NormalizedTradeData = {
+    side: Side.BUY,
     exchange: Exchange.BINANCE,
     price: Number(mockBinanceAggTradeResponse.p),
     quantity: Number(mockBinanceAggTradeResponse.q),
@@ -42,9 +65,19 @@ export const mockBinanceNormalizedTrade: NormalizedTradeData = {
 }
 
 export const mockBybitNormalizedTrade: NormalizedTradeData = {
+    side: Side.BUY,
     exchange: Exchange.BYBIT,
     price: Number(mockBybitTradeResponse.data[0].p),
     quantity: Number(mockBybitTradeResponse.data[0].v),
     size: Number(mockBybitTradeResponse.data[0].p) * Number(mockBybitTradeResponse.data[0].v),
     time: mockBybitTradeResponse.ts,
+}
+
+export const mockBitmexNormalizedTrade: NormalizedTradeData = {
+    side: Side.SELL,
+    exchange: Exchange.BITMEX,
+    price: Number(mockBitmexTradeResponse.data[0].price),
+    quantity: Number(mockBitmexTradeResponse.data[0].grossValue) / Number(mockBitmexTradeResponse.data[0].price),
+    size: Number(mockBitmexTradeResponse.data[0].grossValue),
+    time: Date.parse(mockBitmexTradeResponse.data[0].timestamp),
 }

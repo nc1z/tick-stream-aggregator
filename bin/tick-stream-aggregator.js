@@ -26,6 +26,11 @@ const argv = yargs
         describe: 'Bybit streams',
         default: config.filters.bybit.streams,
     })
+    .option('bitmexStreams', {
+        type: 'array',
+        describe: 'Bitmex streams',
+        default: config.filters.bitmex.streams,
+    })
     .option('size', {
         type: 'number',
         describe: 'Filter by size (USD)',

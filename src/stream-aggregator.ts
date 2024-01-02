@@ -1,10 +1,16 @@
 import findMyWay from 'find-my-way'
 import http from 'http'
 import { App, DISABLED, TemplatedApp } from 'uWebSockets.js'
-import { BINANCE_WS_BASE_ENDPOINT_FUTURES, BYBIT_WS_BASE_ENDPOINT_FUTURES, WS_TOPIC } from './constants'
+import {
+    BINANCE_WS_BASE_ENDPOINT_FUTURES,
+    BITMEX_WS_BASE_ENDPOINT,
+    BYBIT_WS_BASE_ENDPOINT_FUTURES,
+    WS_TOPIC,
+} from './constants'
 import { arrayBufferToString } from './helpers'
 import logger from './logger'
 import { BinanceWebSocketClient } from './producers'
+import { BitmexWebSocketClient } from './producers/bitmex'
 import { BybitWebSocketClient } from './producers/bybit'
 import { Config, Exchange } from './types'
 
@@ -13,9 +19,10 @@ export class StreamAggregator {
     private readonly _wsServer: TemplatedApp
     private readonly _binanceClient: BinanceWebSocketClient
     private readonly _bybitClient: BybitWebSocketClient
+    private readonly _bitmexClient: BitmexWebSocketClient
 
     constructor(private readonly _config: Config) {
-        const { path, binanceStreams, bybitStreams, size } = this._config
+        const { path, binanceStreams, bybitStreams, bitmexStreams, size } = this._config
 
         const router = findMyWay({
             ignoreDuplicateSlashes: true,
@@ -74,6 +81,16 @@ export class StreamAggregator {
             },
             this._wsServer,
         )
+
+        this._bitmexClient = new BitmexWebSocketClient(
+            {
+                endpoint: BITMEX_WS_BASE_ENDPOINT,
+                exchange: Exchange.BITMEX,
+                streams: bitmexStreams,
+                size,
+            },
+            this._wsServer,
+        )
     }
 
     public async start() {
@@ -106,6 +123,7 @@ export class StreamAggregator {
     public async stop() {
         this._binanceClient.close()
         this._bybitClient.close()
+        this._bitmexClient.close()
 
         await new Promise<void>((resolve, reject) => {
             this._httpServer.close(err => {

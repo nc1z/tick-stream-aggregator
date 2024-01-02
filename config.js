@@ -13,5 +13,8 @@ module.exports = {
         bybit: {
             streams: ['publicTrade.BTCUSDT'],
         },
+        bitmex: {
+            streams: ['trade:XBTUSD'],
+        },
     },
 }

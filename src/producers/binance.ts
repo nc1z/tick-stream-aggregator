@@ -41,10 +41,10 @@ export class BinanceWebSocketClient extends BaseWebSocketClient {
         }
 
         const trade = normalizeBinanceTrade(response)
-        const { exchange, price, quantity, size, time } = trade
+        const { exchange, price, size, side, time } = trade
 
         if (!this._options.size || Math.abs(size) >= this._options.size) {
-            logTrade(exchange, price, quantity, time)
+            logTrade(exchange, price, size, side, time)
             this.sendNormalizedTradeData(trade)
         }
     }

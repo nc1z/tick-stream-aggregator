@@ -10,3 +10,6 @@ export const BINANCE_WS_BASE_ENDPOINT_FUTURES = 'wss://fstream.binance.com/ws'
 // BYBIT
 export const BYBIT_WS_BASE_ENDPOINT = 'wss://stream.bybit.com/v5/public/spot'
 export const BYBIT_WS_BASE_ENDPOINT_FUTURES = 'wss://stream.bybit.com/v5/public/linear'
+
+// BITMEX
+export const BITMEX_WS_BASE_ENDPOINT = 'wss://ws.bitmex.com/realtime?subscribe=trade:XBTUSD'
