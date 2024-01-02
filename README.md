@@ -4,7 +4,7 @@ Live trade feed aggregator server streaming BTC time and sales data from major e
 
 > :construction: Tick stream example:
 
-![image](https://github.com/nc1z/tick-stream-aggregator/assets/111836326/a9e79ac5-cdcc-4dca-b828-97183eadd5f7)
+![image](https://github.com/nc1z/tick-stream-aggregator/assets/111836326/766c1da3-d037-450e-831a-e4f9245e9296)
 
 **Supported pairs**
 
@@ -13,6 +13,7 @@ Live trade feed aggregator server streaming BTC time and sales data from major e
 | BINANCE  | BTCUSDT | :white_check_mark: |
 | BYBIT    | BTCUSDT | :white_check_mark: |
 | BYBIT    | BTCUSD  | -                  |
+| BITMEX   | XBTUSD  | :construction:     |
 
 ## Websocket Market Stream
 
